@@ -4,10 +4,11 @@ const category = sequelize.define(
   "category",
   {
     category_id: {
-      type: Sequelize.serielize,
+      type: Sequelize.INTEGER,
       allowNull: false,
       primaryKey: true,
       unique: true,
+      autoIncrement: true,
     },
     name: {
       type: Sequelize.STRING,

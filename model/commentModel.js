@@ -4,10 +4,11 @@ const comment = sequelize.define(
   "comment",
   {
     comment_id: {
-      type: Sequelize.serielize,
+      type: Sequelize.INTEGER,
       allowNull: false,
       primaryKey: true,
       unique: true,
+      autoIncrement: true,
     },
     content: {
       type: Sequelize.STRING,

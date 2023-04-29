@@ -9,6 +9,7 @@ const post = sequelize.define(
       allowNull: false,
       primaryKey: true,
       unique: true,
+      autoIncrement: true,
     },
     title: {
       type: Sequelize.STRING,
@@ -26,6 +27,5 @@ const post = sequelize.define(
     updatedAt: true,
   }
 );
-// User.hasMany(post, { foreignKey: "userId" });
 
 module.exports = post;

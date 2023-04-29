@@ -12,7 +12,7 @@ sequelize
   });
 
 sequelize
-  .sync({ logging: false })
+  .sync({ logging: false, force: false })
   .then(() => {
     console.log("Database synchronized");
   })

@@ -8,6 +8,7 @@ const user = sequelize.define(
       allowNull: false,
       primaryKey: true,
       unique: true,
+      autoIncrement: true,
     },
     username: {
       type: DataTypes.STRING,
@@ -22,6 +23,11 @@ const user = sequelize.define(
     password: {
       type: DataTypes.STRING,
       allowNull: false,
+    },
+    isWriter: {
+      type: DataTypes.BOOLEAN,
+      allowNull: true,
+      defaultValue: false,
     },
   },
   {

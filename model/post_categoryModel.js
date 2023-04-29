@@ -1,10 +1,10 @@
 const { Sequelize } = require("sequelize");
 const sequelize = require("../db/connection");
 const post_category = sequelize.define(
-  "post_category",
+  "postCategory",
   {
     post_category_id: {
-      type: Sequelize.serielize,
+      type: Sequelize.INTEGER,
       allowNull: false,
       primaryKey: true,
       unique: true,
