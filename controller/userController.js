@@ -4,6 +4,33 @@ const error = require("../utility/error");
 const bcrypt = require("bcrypt");
 const { Op } = require("sequelize");
 const logger = require("../utility/logger");
+const jwt = require("jsonwebtoken");
+
+exports.login = async (req, res, next) => {
+  let { email, password } = req.body;
+  try {
+    let user = await User.findOne({ where: { email: email } });
+    if (!user) {
+      next(error.createError(StatusCode.BAD_REQUEST, "Email not found"));
+    }
+    let isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      next(error.createError(StatusCode.BAD_REQUEST, "Password not match"));
+    }
+    let token = jwt.sign({ id: user.user_Id }, process.env.JWT_SECRET, {
+      expiresIn: "1h",
+    });
+    res.cookie("access_token", token, { httpOnly: true });
+    res.status(StatusCode.SUCCESS).json({
+      success: true,
+      message: "Login success",
+      data: user,
+    });
+  } catch (err) {
+    next(error.createError(StatusCode.BAD_REQUEST, err.message));
+  }
+};
+
 exports.getAllUser = async (req, res, next) => {
   try {
     const result = await User.findAll();

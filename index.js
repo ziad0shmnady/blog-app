@@ -3,10 +3,11 @@ const dotenv = require("dotenv");
 const app = express();
 const sequelize = require("./db/connection");
 const relationships = require("./db/relation");
-const ApiError = require("./error/apiError");
 const StatusCode = require("./utility/statusCode");
 const error = require("./utility/error");
+const cookieParser = require("cookie-parser");
 // Importing models
+const ApiError = require("./error/apiError");
 const User = require("./model/userModel");
 const Post = require("./model/postModel");
 const Comment = require("./model/commentModel");
@@ -19,9 +20,11 @@ const postRoutes = require("./router/postRouter");
 const commentRoutes = require("./router/commentRouter");
 const categoryRoutes = require("./router/categoryRouter");
 const postCategoryRoutes = require("./router/postCategoryRouter");
+
+// middleware
 app.use(express.json());
 dotenv.config();
-
+app.use(cookieParser());
 // routes
 app.use("/user", userRoutes);
 app.use("/post", postRoutes);
