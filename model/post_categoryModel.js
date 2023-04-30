@@ -8,6 +8,7 @@ const post_category = sequelize.define(
       allowNull: false,
       primaryKey: true,
       unique: true,
+      autoIncrement: true,
     },
   },
   {

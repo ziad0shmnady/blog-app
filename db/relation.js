@@ -19,3 +19,7 @@ Post.hasMany(Comment, { foreignKey: "postId" });
 
 // relationship between post and category
 Post.belongsToMany(Category, { through: PostCategory, foreignKey: "postId" });
+Category.belongsToMany(Post, {
+  through: PostCategory,
+  foreignKey: "categoryId",
+});

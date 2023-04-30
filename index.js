@@ -16,13 +16,18 @@ const PostCategory = require("./model/post_categoryModel");
 // Importing routes
 const userRoutes = require("./router/userRouter");
 const postRoutes = require("./router/postRouter");
+const commentRoutes = require("./router/commentRouter");
+const categoryRoutes = require("./router/categoryRouter");
+const postCategoryRoutes = require("./router/postCategoryRouter");
 app.use(express.json());
 dotenv.config();
 
 // routes
 app.use("/user", userRoutes);
 app.use("/post", postRoutes);
-
+app.use("/comment", commentRoutes);
+app.use("/category", categoryRoutes);
+app.use("/postCategory", postCategoryRoutes);
 // error handling
 app.use((err, req, res, next) => {
   errorStatus = err.status || 500;
