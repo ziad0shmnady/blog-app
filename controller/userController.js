@@ -17,9 +17,13 @@ exports.login = async (req, res, next) => {
     if (!isMatch) {
       next(error.createError(StatusCode.BAD_REQUEST, "Password not match"));
     }
-    let token = jwt.sign({ id: user.user_Id }, process.env.JWT_SECRET, {
-      expiresIn: "1h",
-    });
+    let token = jwt.sign(
+      { id: user.user_Id, userName: user.username },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: "5h",
+      }
+    );
     res.cookie("access_token", token, { httpOnly: true });
     res.status(StatusCode.SUCCESS).json({
       success: true,

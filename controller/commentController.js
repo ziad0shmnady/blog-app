@@ -3,7 +3,7 @@ const StatusCode = require("../utility/statusCode");
 const error = require("../utility/error");
 const { Op } = require("sequelize");
 const logger = require("../utility/logger");
-
+const jwt = require("jsonwebtoken");
 exports.getAllComment = async (req, res, next) => {
   try {
     const result = await Comment.findAll();
@@ -34,7 +34,10 @@ exports.getCommentById = async (req, res, next) => {
 };
 
 exports.createComment = async (req, res, next) => {
-  const { content, userId, postId } = req.body;
+  const token = req.cookies.access_token;
+  const decoded = jwt.verify(token, process.env.JWT_SECRET);
+  const userId = decoded.id;
+  const { content, postId } = req.body;
   const comment = await Comment.findOne({
     where: { [Op.or]: [{ content: content }] },
   });
@@ -58,10 +61,21 @@ exports.createComment = async (req, res, next) => {
 };
 
 exports.updateComment = async (req, res, next) => {
-  const { content, userId, postId } = req.body;
-  const comment = await Comment.findByPk(req.params.id);
+  const token = req.cookies.access_token;
+  const decoded = jwt.verify(token, process.env.JWT_SECRET);
+  const userId = decoded.id;
+  const userName = decoded.userName;
+  const { content, postId } = req.body;
+  const comment = await Comment.findOne({
+    where: { [Op.and]: [{ comment_id: req.params.id }, { userId: userId }] },
+  });
   if (!comment) {
-    next(error.createError(StatusCode.NOT_FOUND, "Comment not found"));
+    next(
+      error.createError(
+        StatusCode.UNAUTHORIZED,
+        `${userName} You are not authorized to update this post`
+      )
+    );
   }
   try {
     const result = await Comment.update(req.body, {
@@ -73,7 +87,7 @@ exports.updateComment = async (req, res, next) => {
     });
     res.status(StatusCode.SUCCESS).json({
       success: true,
-      data: result,
+      data: result[1],
     });
     logger.info(`update comment ${result.content} by ${result.userId}`);
   } catch (err) {
@@ -82,10 +96,21 @@ exports.updateComment = async (req, res, next) => {
 };
 
 exports.deleteComment = async (req, res, next) => {
+  const token = req.cookies.access_token;
+  const decoded = jwt.verify(token, process.env.JWT_SECRET);
+  const userId = decoded.id;
+  const userName = decoded.userName;
   try {
-    const comment = await Comment.findByPk(req.params.id);
+    const comment = await Comment.findOne({
+      where: { [Op.and]: [{ comment_id: req.params.id }, { userId: userId }] },
+    });
     if (!comment) {
-      next(error.createError(StatusCode.NOT_FOUND, "Comment not found"));
+      next(
+        error.createError(
+          StatusCode.UNAUTHORIZED,
+          `${userName} You are not authorized to update this post`
+        )
+      );
     }
     await comment.destroy();
     res.status(StatusCode.SUCCESS).json({

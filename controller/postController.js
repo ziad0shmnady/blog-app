@@ -3,6 +3,7 @@ const StatusCode = require("../utility/statusCode");
 const error = require("../utility/error");
 const { Op } = require("sequelize");
 const logger = require("../utility/logger");
+const jwt = require("jsonwebtoken");
 
 exports.getAllPost = async (req, res, next) => {
   try {
@@ -34,7 +35,11 @@ exports.getPostById = async (req, res, next) => {
 };
 
 exports.createPost = async (req, res, next) => {
-  const { title, content, userId } = req.body;
+  const token = req.cookies.access_token;
+  const decoded = jwt.verify(token, process.env.JWT_SECRET);
+  const userId = decoded.id;
+
+  const { title, content } = req.body;
   const post = await Post.findOne({
     where: { [Op.or]: [{ title: title }] },
   });
@@ -58,12 +63,17 @@ exports.createPost = async (req, res, next) => {
 };
 
 exports.updatePost = async (req, res, next) => {
+  const token = req.cookies.access_token;
+  const decoded = jwt.verify(token, process.env.JWT_SECRET);
+  const userId = decoded.id;
+  const userName = decoded.userName;
   try {
     const result = await Post.update(req.body, {
-      where: { post_Id: req.params.id },
+      where: { [Op.and]: [{ post_Id: req.params.id }, { userId: userId }] },
       returning: true,
       plain: true,
     });
+
     if (result[0] === 0) {
       next(error.createError(StatusCode.NOT_FOUND, "Post not found"));
     }
@@ -73,15 +83,31 @@ exports.updatePost = async (req, res, next) => {
     });
     logger.info(`update post ${req.params.id}`);
   } catch (err) {
-    next(error.createError(StatusCode.BAD_REQUEST, err.message));
+    next(
+      error.createError(
+        StatusCode.UNAUTHORIZED,
+        `${userName} You are not authorized to update this post`
+      )
+    );
   }
 };
 
 exports.deletePost = async (req, res, next) => {
+  const token = req.cookies.access_token;
+  const decoded = jwt.verify(token, process.env.JWT_SECRET);
+  const userId = decoded.id;
+  const userName = decoded.userName;
   try {
-    const post = await Post.findByPk(req.params.id);
+    const post = await Post.findOne({
+      where: { [Op.and]: [{ post_Id: req.params.id }, { userId: userId }] },
+    });
     if (!post) {
-      next(error.createError(StatusCode.NOT_FOUND, "Post not found"));
+      next(
+        error.createError(
+          StatusCode.UNAUTHORIZED,
+          `${userName} You are not authorized to update this post`
+        )
+      );
     }
     await post.destroy();
     res.status(StatusCode.SUCCESS).json({
