@@ -1,0 +1,260 @@
+openapi: 3.0.0
+info:
+  title: My Blog API
+  description: Test All end points
+  version: 1.0.0
+paths:
+  /user/getAllUser:
+    get:
+      summary: Get all users
+      description: Returns a list of all users.
+
+      tags:
+        - users
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Hello, World!
+  /user/createUser:
+    post:
+      summary: Create a new user
+      description: Creates a new user in the database.
+      tags:
+        - users
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  example: John Doe
+                email:
+                  type: string
+                  example: john.doe@example.com
+                password:
+                  type: string
+                  example: password
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 2
+                  username:
+                    type: string
+                    example: John Doe
+                  email:
+                    type: string
+                    example: john.doe@example.com
+                  password:
+                    type: string
+                    example: $%^&*()
+
+  /post/getAllPost:
+    get:
+      summary: Get all posts
+      description: Returns a list of all posts.
+      tags:
+        - posts
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  postId:
+                    type: integer
+                    example: 1
+                  title:
+                    type: string
+                    example: title 1 !
+                  content:
+                    type: string
+                    example: content 1 !
+                  userId:
+                    type: integer
+                    example: 1
+  /post/updatePost/{postId}:
+    put:
+      summary: Update a post
+      description: Update a post in the database.
+      tags:
+        - posts
+      parameters:
+        - name: postId
+          in: path
+          description: ID of post to update
+          required: true
+          schema:
+            type: integer
+            example: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                postId:
+                  type: integer
+                  example: 1
+                title:
+                  type: string
+                  example: title 1 !
+                content:
+                  type: string
+                  example: content 1 !
+                userId:
+                  type: integer
+                  example: 1
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  postId:
+                    type: integer
+                    example: 1
+                  title:
+                    type: string
+                    example: title 1 !
+                  content:
+                    type: string
+                    example: content 1 !
+                  userId:
+                    type: integer
+                    example: 1
+  /comment/getAllComment:
+    get:
+      summary: Get all comments
+      description: Returns a list of all comments.
+      tags:
+        - comments
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  commentId:
+                    type: integer
+                    example: 1
+                  content:
+                    type: string
+                    example: content 1 !
+                  userId:
+                    type: integer
+                    example: 1
+                  postId:
+                    type: integer
+                    example: 1
+
+  /comment/updateComment/{commentId}:
+    put:
+      summary: Update a comment
+      description: Update a comment in the database.
+      tags:
+        - comments
+      parameters:
+        - name: commentId
+          in: path
+          description: ID of comment to update
+          required: true
+          schema:
+            type: integer
+            example: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                commentId:
+                  type: integer
+                  example: 1
+                content:
+                  type: string
+                  example: content 1 !
+                userId:
+                  type: integer
+                  example: 1
+                postId:
+                  type: integer
+                  example: 1
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  commentId:
+                    type: integer
+                    example: 1
+                  content:
+                    type: string
+                    example: content 1 !
+                  userId:
+                    type: integer
+                    example: 1
+                  postId:
+                    type: integer
+                    example: 1
+  /comment/deleteComment/{commentId}:
+    delete:
+      summary: Delete a comment
+      description: Delete a comment in the database.
+      tags:
+        - comments
+      parameters:
+        - name: commentId
+          in: path
+          description: ID of comment to delete
+          required: true
+          schema:
+            type: integer
+            example: 1
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  commentId:
+                    type: integer
+                    example: 1
+                  content:
+                    type: string
+                    example: content 1 !
+                  userId:
+                    type: integer
+                    example: 1
+                  postId:
+                    type: integer
+                    example: 1
