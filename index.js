@@ -9,6 +9,8 @@ const cookieParser = require("cookie-parser");
 const swaggerUi = require("swagger-ui-express");
 const yaml = require("js-yaml");
 const fs = require("fs");
+const { userSchema } = require("./validation/schemaValidate");
+const { validateBody } = require("./validation/validateBody");
 
 // Importing models
 const ApiError = require("./error/apiError");
@@ -28,10 +30,12 @@ const postRoutes = require("./router/postRouter");
 const commentRoutes = require("./router/commentRouter");
 const categoryRoutes = require("./router/categoryRouter");
 const postCategoryRoutes = require("./router/postCategoryRouter");
+
 // middleware
 app.use(express.json());
 dotenv.config();
 app.use(cookieParser());
+
 // routes
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(spec));
 app.use("/user", userRoutes);
@@ -39,6 +43,9 @@ app.use("/post", postRoutes);
 app.use("/comment", commentRoutes);
 app.use("/category", categoryRoutes);
 app.use("/postCategory", postCategoryRoutes);
+// app.post("/test", zodValidator(userSchema), (req, res) => {
+//   res.send(req.body);
+// });
 // error handling
 app.use((err, req, res, next) => {
   errorStatus = err.status || 500;

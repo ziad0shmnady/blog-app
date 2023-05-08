@@ -22,6 +22,8 @@
     "sequelize": "^6.31.0",
     "swagger-ui": "^4.18.3",
     "swagger-ui-express": "^4.6.3",
-    "winston": "^3.8.2"
+    "winston": "^3.8.2",
+    "zod": "^3.21.4",
+    "zod-express": "^0.0.8"
   }
 }
