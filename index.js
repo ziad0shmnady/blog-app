@@ -9,8 +9,7 @@ const cookieParser = require("cookie-parser");
 const swaggerUi = require("swagger-ui-express");
 const yaml = require("js-yaml");
 const fs = require("fs");
-const { userSchema } = require("./validation/schemaValidate");
-const { validateBody } = require("./validation/validateBody");
+var getRawBody = require("raw-body");
 
 // Importing models
 const ApiError = require("./error/apiError");

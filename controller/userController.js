@@ -5,7 +5,8 @@ const bcrypt = require("bcrypt");
 const { Op } = require("sequelize");
 const logger = require("../utility/logger");
 const jwt = require("jsonwebtoken");
-
+const { redisClient, getOrSetCache } = require("../utility/redisConfig");
+const { get } = require("../router/userRouter");
 exports.login = async (req, res, next) => {
   let { email, password } = req.body;
   try {
@@ -37,12 +38,36 @@ exports.login = async (req, res, next) => {
 
 exports.getAllUser = async (req, res, next) => {
   try {
-    const result = await User.findAll();
-    logger.info("get all user");
+    const cachKey = "express:" + req.originalUrl || req.url;
+    const users = await getOrSetCache(cachKey, async () => {
+      Allusers = await User.findAll();
+      return Allusers;
+    });
     res.status(StatusCode.SUCCESS).json({
       success: true,
-      data: result,
+      data: users,
     });
+
+    // redisClient.get(cachKey, async (err, data) => {
+    //   if (err) {
+    //     next(error.createError(StatusCode.BAD_REQUEST, err.message));
+    //   }
+    //   if (data !== null) {
+    //     logger.info("get all user from cache");
+    //     res.status(StatusCode.SUCCESS).json({
+    //       success: true,
+    //       data: JSON.parse(data),
+    //     });
+    //   } else {
+    //     const result = await User.findAll();
+    //     redisClient.setEx(cachKey, 3600, JSON.stringify(result));
+    //     logger.info("get all user");
+    //     res.status(StatusCode.SUCCESS).json({
+    //       success: true,
+    //       data: result,
+    //     });
+    //   }
+    // });
   } catch (err) {
     next(error.createError(StatusCode.NOT_FOUND, err.message));
   }
@@ -52,13 +77,27 @@ exports.getUserById = async (req, res, next) => {
   try {
     const result = await User.findByPk(req.params.id);
     if (!result) {
-      next(error.createError(StatusCode.NOT_FOUND, "User not found"));
+      next(error.createError(StatusCode.NOT_FOUND, err.message));
     }
+    const cachKey = "express:" + req.originalUrl || req.url;
+    const user = await getOrSetCache(cachKey, async () => {
+      const Oneuser = await User.findByPk(req.params.id);
+      return Oneuser;
+    });
     res.status(StatusCode.SUCCESS).json({
       success: true,
-      data: result,
+      data: user,
     });
     logger.info(`get user ${result.username} by id`);
+
+    // if (!result) {
+    //   next(error.createError(StatusCode.NOT_FOUND, "User not found"));
+    // }
+    // res.status(StatusCode.SUCCESS).json({
+    //   success: true,
+    //   data: result,
+    // });
+    // logger.info(`get user ${result.username} by id`);
   } catch (err) {
     next(error.createError(StatusCode.NOT_FOUND, err.message));
   }
